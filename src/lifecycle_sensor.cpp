@@ -51,16 +51,13 @@ public:
 private:
     void timer_callback()
     {
-        if (publisher_->is_activated())
-        {
-            auto msg = std_msgs::msg::Float64();
-            msg.data = dist_(gen_);
-            RCLCPP_INFO(this->get_logger(), "Publishing sensor data: %.2f", msg.data);
-            publisher_->publish(msg);
-        }
+        auto msg = std_msgs::msg::Float64();
+        msg.data = dist_(gen_);
+        RCLCPP_INFO(this->get_logger(), "Publishing sensor data: %.2f", msg.data);
+        publisher_->publish(msg);
     }
 
-    rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Float64>::SharedPtr publisher_;
+    rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr publisher_;
     rclcpp::TimerBase::SharedPtr timer_;
 
     std::random_device rd_;
@@ -71,7 +68,10 @@ private:
 int main(int argc, char *argv[])
 {
     rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<LifecycleSensor>()->get_node_base_interface());
+    auto node = std::make_shared<LifecycleSensor>();
+    rclcpp::executors::SingleThreadedExecutor executor;
+    executor.add_node(node->get_node_base_interface());
+    executor.spin();
     rclcpp::shutdown();
     return 0;
 }
