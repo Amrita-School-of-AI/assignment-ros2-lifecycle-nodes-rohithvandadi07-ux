@@ -11,10 +11,22 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(std_msgs REQUIRED)
 
-# TODO: Add the executable target named 'lifecycle_sensor'
-# 1. Add executable using src/lifecycle_sensor.cpp
-# 2. Add dependencies (ament_target_dependencies) for rclcpp, rclcpp_lifecycle, std_msgs
-# 3. Install the target to the DESTINATION lib/${PROJECT_NAME}
+# Add the executable target
+add_executable(lifecycle_sensor src/lifecycle_sensor.cpp)
+
+# Use ament_target_dependencies instead of target_link_libraries 
+# This handles the include directories and libraries automatically
+ament_target_dependencies(lifecycle_sensor
+  rclcpp
+  rclcpp_lifecycle
+  std_msgs
+)
+
+# Install the target
+install(TARGETS
+  lifecycle_sensor
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
